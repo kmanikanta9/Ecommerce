@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronics</title>
+    <link rel="stylesheet" href="../Css/electronics.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&" />
+</head>
+<body>
+     <header>
+        <nav>
+            <div id="nav-bar">
+                <div id="dashboard-logo">
+                    <h3>STYLEDEN</h3>
+                    <img src="../style-logo.png" alt="">
+                </div>
+
+                <div id="nav-button">
+                    <button id="dashboard-btn">Home</button>
+                    <button id="fashion-btn">Fashion</button>
+                    <button id="electronics-btn">Electronics</button>
+                    <button id="home-btn">Home Products</button>
+                    
+                </div>
+                <div id="nav-select">
+                    <span class="material-symbols-outlined">person</span>
+                    <button id="signin">SignIn</button>
+                    <button id="signup">SignUp</button>
+                    <span id="view-cart-btn" class="material-symbols-outlined">shopping_cart</span>
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <br>
+     <div id="sort-filter">
+        <label for="">Price Range: </label>
+        <select name="" id="sort-select">
+            <option value="">Sort By</option>
+            <option value="asc">Low to High</option>
+            <option value="desc"> High to Low</option>
+        </select>
+        <label for="">Select By Category: </label>
+        <select name="" id="filter-select">
+            <option value="">Filter By Category</option>
+            <option value="tv">Television</option>
+            <option value="washing machine">Washing Machine</option>
+            <option value="refrigerator">Refrigerator</option>
+            <option value="mobile">Mobile</option>
+            <option value="laptop">Laptop</option>
+            <option value="watch">Watch</option>
+        </select>
+     </div>
+
+     
+    <div id="electronics-products"></div>
+
+    
+     <footer>
+        <div id="footer">
+            <p>Copyright @2025 Styleden
+            </p>
+            <div id="about">
+                <h4>ABOUT</h4>
+                <p>Contact Us</p>
+                <p>About US</p>
+            </div>
+            <div id="help">
+                <h4>HELP</h4>
+                <p>Payments</p>
+                <p>Cancellation & Returns</p>
+                <p>FAQ</p>
+            </div>
+            <div id="consumer">
+                <h4>CONSUMERS</h4>
+                <p>Terms Of Use</p>
+                <p>Security</p>
+                <p>Privacy</p>
+            </div>
+            <div id="mail">
+                <H4>MAIL US</H4>
+                <p>styleden@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+
+        <div id="cart-section" class="hidden">
+    <button id="close-cart">×</button>
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+    <button id="checkout-btn">Checkout</button>
+    </div>
+    
+</body>
+</html>
+<script type="module" src="./JavaScript/nav.js"></script>
+<script type="module" src="./JavaScript/authecom.js"></script>
+<script type="module" src="./JavaScript/electronics.js"></script>

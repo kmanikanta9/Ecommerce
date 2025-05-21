@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion</title>
+    <link rel="stylesheet" href="../Css/fashion.css">
+     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&" />
+</head>
+<body>
+     <header>
+        <nav>
+            <div id="nav-bar">
+                <div id="dashboard-logo">
+                    <h3>STYLEDEN</h3>
+                    <img src="../style-logo.png" alt="">
+                </div>
+
+                <div id="nav-button">
+                    <button id="dashboard-btn">Home</button>
+                    <button id="fashion-btn">Fashion</button>
+                    <button id="electronics-btn">Electronics</button>
+                    <button id="home-btn">Home Products</button>
+                    
+                </div>
+                <div id="nav-select">
+                    <span class="material-symbols-outlined">person</span>
+                    <button id="signin">SignIn</button>
+                    <button id="signup">SignUp</button>
+                    <span id="view-cart-btn" class="material-symbols-outlined">shopping_cart</span>
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <br>
+     <div id="sort-filter">
+        <label for="">Price Range: </label>
+        <select name="" id="sort-select">
+            <option value="">Sort By</option>
+            <option value="asc">Low to High</option>
+            <option value="desc"> High to Low</option>
+        </select>
+        <label for="">Select By Category:</label>
+        <select name="" id="filter-select">
+            <option value="">Filter By Category</option>
+            <option value="men's">Men</option>
+            <option value="women's">Women</option>
+            <option value="accessories">Accessories</option>
+        </select>
+     </div>
+
+
+    <div id="fashion-products"></div>
+    
+    <section id="fashion-section">
+        <h2 id="fashion-section-heading">TOP BRANDS IN FASHIONS</h2>
+        <div id="fashion">
+            <div id="fashion-inside">
+            <div id="fashion-div">
+                <img src="https://uspoloassn.in/cdn/shop/files/2_6aece368-9204-430f-b619-7f5af04fda77.jpg" alt="">
+                <h3>Men's White Shirt</h3>
+                <p> ₹1,000</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            <div id="fashion-div">
+                <img src="https://assets.myntassets.com/w_412,q_60,dpr_2,fl_progressive/assets/images/30154260/2024/7/8/a428b7b2-1d5a-4235-8dfa-41e66b1a72aa1720453321739RegularFitTexturedshirt1.jpg" alt="">
+                <h3>Light Brown Classic</h3>
+                <p> ₹3,000</p>
+                <button class="add-to-cart">Add to Cart</button>
+              
+            </div>
+            <div id="fashion-div">
+                <img src="https://assets.ajio.com/medias/sys_master/root/20240828/sslp/66cf11561d763220faa40cc8/-473Wx593H-700317165-black-MODEL4.jpg" alt="">
+                <h3>Men Tailored Fit Shirt </h3>
+                <p> ₹2,999</p>
+                <button class="add-to-cart">Add to Cart</button>
+               
+            </div>
+            <div id="fashion-div">
+                <img src="https://assets.ajio.com/medias/sys_master/root/20250415/I8mt/67fe532d55340d4b4fda5cc1/-473Wx593H-469724313-navy-MODEL.jpg" alt="">
+                <h3>Men's Casual Shirt</h3>
+                <p> ₹3,990</p>
+                <button class="add-to-cart">Add to Cart</button>
+               
+            </div>
+            <div id="fashion-div">
+                <img src="https://assets.ajio.com/medias/sys_master/root/20231010/tweY/65247f55ddf77915192e7290/-473Wx593H-466689532-black-MODEL2.jpg" alt="">
+                <h3>JOKER & WITCH</h3>
+                <p> ₹1,225</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            <div id="fashion-div">
+                <img src="https://assets.ajio.com/medias/sys_master/root/20250320/K1l3/67dbc35255340d4b4f7ad2b1/-473Wx593H-701357052-tan-MODEL.jpg" alt="">
+                <h3>KASTNERMen Slim Belt</h3>
+                <p> ₹1,250</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            <div id="fashion-div">
+                <img src="https://assets.ajio.com/medias/sys_master/root/20250225/G3EC/67bdadb02960820c49a836c4/-473Wx593H-701264898-black-MODEL2.jpg" alt="">
+                <h3>PEORAMen Silver-Plated Chain with Pendant</h3>
+                <p> ₹1,000</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            <div id="fashion-div">
+                <img src="https://assets.ajio.com/medias/sys_master/root/20241014/luTP/670ce843f9b8ef490bb720da/-473Wx593H-466829261-white-MODEL.jpg" alt="">
+                <h3>RED TAPEMen Round-Toe Running Sports Shoes</h3>
+                <p> ₹3,990</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            </div>
+        </div>
+    </section>
+      <footer>
+        <div id="footer">
+            <p>Copyright @2025 Styleden
+            </p>
+            <div id="about">
+                <h4>ABOUT</h4>
+                <p>Contact Us</p>
+                <p>About US</p>
+            </div>
+            <div id="help">
+                <h4>HELP</h4>
+                <p>Payments</p>
+                <p>Cancellation & Returns</p>
+                <p>FAQ</p>
+            </div>
+            <div id="consumer">
+                <h4>CONSUMERS</h4>
+                <p>Terms Of Use</p>
+                <p>Security</p>
+                <p>Privacy</p>
+            </div>
+            <div id="mail">
+                <H4>MAIL US</H4>
+                <p>styleden@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+<div id="cart-section" class="hidden">
+  <button id="close-cart">×</button>
+  <h2>Your Cart</h2>
+  <div id="cart-items"></div>
+  <button id="checkout-btn">Checkout</button>
+</div>
+
+</body>
+</html>
+<script type="module" src="./JavaScript/fashion.js"></script>
+<script type="module" src="./JavaScript/nav.js"></script>
+<script type="module" src="./JavaScript/authecom.js"></script>
