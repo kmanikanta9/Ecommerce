@@ -1,88 +1,89 @@
-import {auth,db} from "./firebase-config.js"
-import {signOut,onAuthStateChanged 
-
+import { auth, db } from "./firebase-config.js";
+import {
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import { getFirestore,
-    doc,
-    setDoc,
-    getDocs,
-    getDoc,
-    collection,
-    addDoc,
-    deleteDoc,
-
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDocs,
+  getDoc,
+  collection,
+  addDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
-
-document.addEventListener("DOMContentLoaded",()=>{
-    let signinBtn=document.getElementById("signin")
-    signinBtn.addEventListener("click",()=>{
-        window.location.href="./signinE.html"
-    })
-    let signupBtn=document.getElementById("signup")
-    signupBtn.addEventListener("click",()=>{
-        window.location.href="./signupE.html"
-    })
-let userLoggedIn = false;
-
-onAuthStateChanged(auth, (user) => {
-  userLoggedIn = !!user; // true if logged in
-});
-
-document.getElementById("fashion-btn").addEventListener("click", () => {
-  if (userLoggedIn) {
-    window.location.href = "./fashion.html";
-  } else {
-    alert("Please Log In");
-    window.location.href = "./signinE.html";
-  }
-});
-
-document.getElementById("electronics-btn").addEventListener("click", () => {
-  if (userLoggedIn) {
-    window.location.href = "./electronics.html";
-  } else {
-    alert("Please Log In");
-    window.location.href = "./signinE.html";
-  }
-});
-
-document.getElementById("home-btn").addEventListener("click", () => {
-  if (userLoggedIn) {
-    window.location.href = "./home.html";
-  } else {
-    alert("Please Log In");
-    window.location.href = "./signinE.html";
-  }
-});
-
-    let dashboardBtn=document.getElementById("dashboard-btn")
-    dashboardBtn.addEventListener("click",()=>{
-        window.location.href="index.html"
-    })
-
-
-    let currentUser = null;
-     let currentRole = null;
-    onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      currentUser = user;
-      let userDocRef = doc(db, "users", user.uid);
-      const userDocsnap = await getDoc(userDocRef);
-      if (userDocsnap.exists()) {
-        currentRole = userDocsnap.data().role;
-        loadCustomerCart(currentUser.uid, currentRole);
-      }
-    }
-  });
-    const viewCartBtn = document.getElementById("view-cart-btn");
+document.addEventListener("DOMContentLoaded", () => {
+  const signinBtn = document.getElementById("signin");
+  const signupBtn = document.getElementById("signup");
+  const dashboardBtn = document.getElementById("dashboard-btn");
+  const viewCartBtn = document.getElementById("view-cart-btn");
   const cartItemsContainer = document.getElementById("cart-items");
   const checkoutBtn = document.getElementById("checkout-btn");
   const cartSection = document.getElementById("cart-section");
   const closeCart = document.getElementById("close-cart");
+  const logoutBtn = document.getElementById("ogout-btn");
 
-  cartSection.style.display = "none";
-    async function loadCustomerCart(userId) {
+  if (signinBtn) signinBtn.addEventListener("click", () => window.location.href = "./signinE.html");
+  if (signupBtn) signupBtn.addEventListener("click", () => window.location.href = "./signupE.html");
+  if (dashboardBtn) dashboardBtn.addEventListener("click", () => window.location.href = "./index.html");
+  if (cartSection) cartSection.style.display = "none";
+
+  let currentUser = null;
+  let currentRole = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
+
+    const fashionBtn = document.getElementById("fashion-btn");
+    const electronicsBtn = document.getElementById("electronics-btn");
+    const homeBtn = document.getElementById("home-btn");
+
+    if (fashionBtn) {
+      fashionBtn.addEventListener("click", () => {
+        if (user) {
+          window.location.href = "./fashion.html";
+        } else {
+          alert("Please Log In");
+          window.location.href = "./signinE.html";
+        }
+      });
+    }
+
+    if (electronicsBtn) {
+      electronicsBtn.addEventListener("click", () => {
+        if (user) {
+          window.location.href = "./electronics.html";
+        } else {
+          alert("Please Log In");
+          window.location.href = "./signinE.html";
+        }
+      });
+    }
+
+    if (homeBtn) {
+      homeBtn.addEventListener("click", () => {
+        if (user) {
+          window.location.href = "./home.html";
+        } else {
+          alert("Please Log In");
+          window.location.href = "./signinE.html";
+        }
+      });
+    }
+
+    if (user) {
+      let userDocRef = doc(db, "users", user.uid);
+      const userDocsnap = await getDoc(userDocRef);
+      if (userDocsnap.exists()) {
+        currentRole = userDocsnap.data().role;
+        loadCustomerCart(user.uid);
+      }
+    }
+  });
+
+  async function loadCustomerCart(userId) {
     const cartRef = collection(db, "users", userId, "cart");
     const cartSnap = await getDocs(cartRef);
     cartItemsContainer.innerHTML = "";
@@ -99,7 +100,7 @@ document.getElementById("home-btn").addEventListener("click", () => {
       const div = document.createElement("div");
       div.classList.add("cart-item");
       div.innerHTML = `
-        <img src="${data.electronicsImage || data.fashionImage ||data.homeImage}" style="width: 100px;">
+        <img src="${data.electronicsImage || data.fashionImage || data.homeImage}" style="width: 100px;">
         <h4>${data.electronicsTitle || data.fashionTitle || data.homeTitle}</h4>
         <p>₹${data.electronicsPrice || data.fashionPrice || data.homePrice}</p>
         <p style="font-size: 12px; color: gray">Category: ${data.cartType}</p>
@@ -119,7 +120,8 @@ document.getElementById("home-btn").addEventListener("click", () => {
       cartItemsContainer.appendChild(div);
     });
   }
-   if (viewCartBtn) {
+
+  if (viewCartBtn) {
     viewCartBtn.addEventListener("click", () => {
       if (!currentUser) {
         alert("Login to see the cart.");
@@ -130,6 +132,7 @@ document.getElementById("home-btn").addEventListener("click", () => {
       cartSection.style.display = "block";
     });
   }
+
   if (checkoutBtn) {
     checkoutBtn.addEventListener("click", async () => {
       if (!currentUser) {
@@ -154,19 +157,22 @@ document.getElementById("home-btn").addEventListener("click", () => {
     });
   }
 
-  closeCart.addEventListener("click", () => {
-    cartSection.style.display = "none";
-  });
-      let logoutBtn=document.getElementById("ogout-btn")
-      logoutBtn.addEventListener("click", async (event) => {
+  if (closeCart) {
+    closeCart.addEventListener("click", () => {
+      cartSection.style.display = "none";
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async (event) => {
       event.preventDefault();
       try {
         await signOut(auth);
         alert("Logged out successfully");
-        window.location.href = "./signinE.html"; 
+        window.location.href = "./signinE.html";
       } catch (error) {
         alert("Error logging out: " + error.message);
       }
     });
-    
-})
+  }
+});

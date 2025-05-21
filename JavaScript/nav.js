@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const signinBtn = document.getElementById("signin");
@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const homeBtn = document.getElementById("home-btn");
   const dashboardBtn = document.getElementById("dashboard-btn");
 
-  // Safe checks to avoid null reference errors
+  // Simple nav buttons
   if (signinBtn) {
     signinBtn.addEventListener("click", () => {
       window.location.href = "./signinE.html";
@@ -22,42 +22,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (fashionBtn) {
-    fashionBtn.addEventListener("click", () => {
-      if (auth.currentUser) {
-        window.location.href = "./fashion.html";
-      } else {
-        alert("Please Log In");
-        window.location.href = "./signinE.html";
-      }
-    });
-  }
-
-  if (electronicsBtn) {
-    electronicsBtn.addEventListener("click", () => {
-      if (auth.currentUser) {
-        window.location.href = "./electronics.html";
-      } else {
-        alert("Please Log In");
-        window.location.href = "./signinE.html";
-      }
-    });
-  }
-
-  if (homeBtn) {
-    homeBtn.addEventListener("click", () => {
-      if (auth.currentUser) {
-        window.location.href = "./home.html";
-      } else {
-        alert("Please Log In");
-        window.location.href = "./signinE.html";
-      }
-    });
-  }
-
   if (dashboardBtn) {
     dashboardBtn.addEventListener("click", () => {
-      window.location.href = "../index.html";
+      window.location.href = "./index.html";
     });
   }
+
+  // Wait for Firebase Auth to initialize before checking currentUser
+  onAuthStateChanged(auth, (user) => {
+    if (fashionBtn) {
+      fashionBtn.addEventListener("click", () => {
+        if (user) {
+          window.location.href = "./fashion.html";
+        } else {
+          alert("Please Log In");
+          window.location.href = "./signinE.html";
+        }
+      });
+    }
+
+    if (electronicsBtn) {
+      electronicsBtn.addEventListener("click", () => {
+        if (user) {
+          window.location.href = "./electronics.html";
+        } else {
+          alert("Please Log In");
+          window.location.href = "./signinE.html";
+        }
+      });
+    }
+
+    if (homeBtn) {
+      homeBtn.addEventListener("click", () => {
+        if (user) {
+          window.location.href = "./home.html";
+        } else {
+          alert("Please Log In");
+          window.location.href = "./signinE.html";
+        }
+      });
+    }
+  });
 });
