@@ -1,10 +1,14 @@
+// File: Js/auth.js
+
 import { auth, db } from "./firebase-config.js";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+
 import {
   doc,
   setDoc,
@@ -19,7 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Sign In Logic
   if (signinBtn) {
     signinBtn.addEventListener("click", async (event) => {
-      event.preventDefault();
+      event.preventDefault(); // Prevent form refresh
+      
       const email = document.getElementById("signin-email").value;
       const password = document.getElementById("signin-password").value;
 
@@ -29,10 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (userDoc.exists()) {
           const role = userDoc.data().role;
+
           if (role === "vendor") {
-            window.location.href = "./vendor.html";
+            window.location.href = "vendor.html";
           } else {
-            window.location.href = "./index.html"; // Adjust path if needed
+            window.location.href = "index.html";
           }
         } else {
           alert("User role data not found. Please contact support.");
@@ -47,7 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Sign Up Logic
   if (signupBtn) {
     signupBtn.addEventListener("click", async (event) => {
-      event.preventDefault();
+      event.preventDefault(); // Prevent form refresh
+      
       const email = document.getElementById("signup-email").value;
       const password = document.getElementById("signup-password").value;
       const role = document.getElementById("role-select").value;
@@ -58,8 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
           email,
           role,
         });
+
         alert("Signup successful. Please sign in.");
-        window.location.href = "./signinE.html";
+        window.location.href = "signinE.html";
       } catch (error) {
         alert("Signup failed: " + error.message);
       }
@@ -69,18 +77,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Logout Logic
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async (event) => {
-      event.preventDefault();
+      event.preventDefault(); // Prevent default behavior
+      
       try {
         await signOut(auth);
         alert("Logged out successfully");
-        window.location.href = "./signinE.html";
+        window.location.href = "signinE.html";
       } catch (error) {
         alert("Error logging out: " + error.message);
       }
     });
   }
 
-  // ✅ Auth Guard Fallback (redirect if accessing protected page)
+  // ✅ Auth State Change / Role-based Redirect
   onAuthStateChanged(auth, async (user) => {
     const currentPage = window.location.pathname.split("/").pop() || "index.html";
     const vendorPages = ["vendor.html"];
@@ -89,28 +98,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (user) {
       const userDoc = await getDoc(doc(db, "users", user.uid));
+
       if (userDoc.exists()) {
         const role = userDoc.data().role;
 
         if (role === "vendor" && !vendorPages.includes(currentPage)) {
-          if (["signinE.html", "signupE.html", "index.html", ""].includes(currentPage)) {
-            window.location.href = "./vendor.html";
+          if (publicPages.includes(currentPage)) {
+            window.location.href = "vendor.html";
           }
         } else if (role !== "vendor" && !customerPages.includes(currentPage)) {
           if (["signinE.html", "signupE.html"].includes(currentPage)) {
-            window.location.href = "./index.html"; // Adjust as needed
+            window.location.href = "index.html";
           }
         }
       } else {
         await signOut(auth);
         if (currentPage !== "signinE.html") {
-          window.location.href = "./signinE.html";
+          window.location.href = "signinE.html";
         }
       }
     } else {
       const isPublic = publicPages.includes(currentPage);
       if (!isPublic && currentPage !== "signinE.html") {
-        window.location.href = "./signinE.html";
+        window.location.href = "signinE.html";
       }
     }
   });
