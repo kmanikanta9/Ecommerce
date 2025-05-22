@@ -1,6 +1,17 @@
 // File: Js/index.js
-import { auth } from "./firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import { auth, db } from "./firebase-config.js";
+import {
+  signOut,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const signinBtn = document.getElementById("signin");
@@ -21,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (user) {
             window.location.href = page;
           } else {
-            alert("Please log in");
+            // alert("Please log in");
             window.location.href = "./signinE.html";
           }
         });
@@ -32,4 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
     handleAccess(electronicsBtn, "./electronics.html");
     handleAccess(homeBtn, "./home.html");
   });
+  // let logoutBtn=document.getElementById("ogout-btn")
+  //   logoutBtn.addEventListener("click", async (event) => {
+  //     event.preventDefault();
+  //     await signOut(auth);
+  //     alert("Logged out");
+  //     window.location.href = "./signinE.html";
+  //   });
+
 });

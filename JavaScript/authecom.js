@@ -65,22 +65,36 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ✅ Logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async (event) => {
-      event.preventDefault();
-      try {
-        await signOut(auth);
-        alert("Logged out successfully");
-        window.location.href = "signinE.html";
-      } catch (error) {
-        alert("Logout error: " + error.message);
-      }
-    });
-  }
+  // if (logoutBtn) {
+  //   logoutBtn.addEventListener("click", async (event) => {
+  //     event.preventDefault();
+  //     try {
+  //       await signOut(auth);
+  //       alert("Logged out successfully");
+  //       window.location.href = "signinE.html";
+  //     } catch (error) {
+  //       alert("Logout error: " + error.message);
+  //     }
+  //   });
+  // }
 
   // ✅ Role-based Redirect
 onAuthStateChanged(auth, async (user) => {
   const currentPage = location.pathname;
+
+  // Define protected pages — these require login
+  const protectedPages = [
+    "/fashion.html",
+    "/electronics.html",
+    "/home.html",
+    "/vendor.html"
+  ];
+
+  // Define public pages that shouldn't be accessed by logged-in users
+  const authPages = [
+    "/signine.html",
+    "/signupE.html"
+  ];
 
   if (user) {
     const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -88,26 +102,34 @@ onAuthStateChanged(auth, async (user) => {
       const userData = userDoc.data();
       const role = userData.role;
 
-      // Prevent redirect loop if user is already on correct page
-      if (role === "vendor" && !currentPage.includes("vendor.html")) {
+      // 🚫 If user is already logged in and is on sign-in or sign-up page → redirect them
+      if (authPages.includes(currentPage)) {
+        if (role === "vendor") {
+          location.replace("/vendor.html");
+        } else if (role === "customer") {
+          location.replace("/index.html");
+        }
+        return; // Stop here
+      }
+
+      // ✅ If already on correct page, don't redirect
+      if (role === "vendor" && currentPage !== "/vendor.html" && protectedPages.includes(currentPage)) {
         location.replace("/vendor.html");
-      } else if (role === "customer" && !currentPage.includes("index.html") &&
-                 !currentPage.includes("fashion.html") &&
-                 !currentPage.includes("electronics.html") &&
-                 !currentPage.includes("home.html")) {
+      } else if (
+        role === "customer" &&
+        protectedPages.includes(currentPage) &&
+        !["/index.html", "/fashion.html", "/electronics.html", "/home.html"].includes(currentPage)
+      ) {
         location.replace("/index.html");
       }
     }
   } else {
-    // Only redirect if user tries to access a protected page
-    const protectedPages = [
-      "/index.html", "/fashion.html", "/electronics.html", "/home.html", "/vendor.html"
-    ];
-
-    if (protectedPages.some(page => currentPage.includes(page))) {
-      location.replace("/signine.html"); // redirect to login
+    // ❌ Not logged in — redirect if trying to access protected page
+    if (protectedPages.includes(currentPage)) {
+      location.replace("/signine.html");
     }
   }
 });
+
 
 });
