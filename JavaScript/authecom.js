@@ -1,4 +1,4 @@
-// File: Js/auth.js
+// File: Js/authecom.js
 import { auth, db } from "./firebase-config.js";
 import {
   createUserWithEmailAndPassword,
@@ -57,79 +57,79 @@ document.addEventListener("DOMContentLoaded", () => {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, "users", userCred.user.uid), { email, role });
         alert("Signup successful. Please sign in.");
-        window.location.href = "signinE.html";
+        window.location.href = "signine.html";
       } catch (error) {
         alert("Signup failed: " + error.message);
       }
     });
   }
 
-  // ✅ Logout
+  // ✅ Optional Logout Button Handler
   // if (logoutBtn) {
   //   logoutBtn.addEventListener("click", async (event) => {
   //     event.preventDefault();
   //     try {
   //       await signOut(auth);
   //       alert("Logged out successfully");
-  //       window.location.href = "signinE.html";
+  //       window.location.href = "signine.html";
   //     } catch (error) {
   //       alert("Logout error: " + error.message);
   //     }
   //   });
   // }
 
-  // ✅ Role-based Redirect
-onAuthStateChanged(auth, async (user) => {
-  const currentPage = location.pathname;
+  // ✅ Role-based Redirect on Page Load
+  onAuthStateChanged(auth, async (user) => {
+    const currentPage = location.pathname;
+    const page = currentPage.split("/").pop();
 
-  // Define protected pages — these require login
-  const protectedPages = [
-    "/fashion.html",
-    "/electronics.html",
-    "/home.html",
-    "/vendor.html"
-  ];
+    // 🔐 Pages only for logged-in users
+    const protectedPages = [
+      "fashion.html",
+      "electronics.html",
+      "home.html",
+      "vendor.html"
+    ];
 
-  // Define public pages that shouldn't be accessed by logged-in users
-  const authPages = [
-    "/signine.html",
-    "/signupE.html"
-  ];
+    // 🚪 Auth pages (signin/signup) - should be avoided by logged-in users
+    const authPages = [
+      "signine.html",
+      "signupE.html"
+    ];
 
-  if (user) {
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      const role = userData.role;
+    if (user) {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const role = userData.role;
 
-      // 🚫 If user is already logged in and is on sign-in or sign-up page → redirect them
-      if (authPages.includes(currentPage)) {
-        if (role === "vendor") {
-          location.replace("/vendor.html");
-        } else if (role === "customer") {
-          location.replace("/index.html");
+        // 🔁 Redirect logged-in users away from signin/signup
+        if (authPages.includes(page)) {
+          if (role === "vendor") {
+            location.replace("vendor.html");
+          } else {
+            location.replace("index.html");
+          }
+          return;
         }
-        return; // Stop here
-      }
 
-      // ✅ If already on correct page, don't redirect
-      if (role === "vendor" && currentPage !== "/vendor.html" && protectedPages.includes(currentPage)) {
-        location.replace("/vendor.html");
-      } else if (
-        role === "customer" &&
-        protectedPages.includes(currentPage) &&
-        !["/index.html", "/fashion.html", "/electronics.html", "/home.html"].includes(currentPage)
-      ) {
-        location.replace("/index.html");
+        // ✅ Vendor trying to access customer pages
+        if (role === "vendor" && protectedPages.includes(page) && page !== "vendor.html") {
+          location.replace("vendor.html");
+        }
+
+        // ✅ Customer trying to access vendor-only page
+        if (role === "customer" && page === "vendor.html") {
+          location.replace("index.html");
+        }
+
+      }
+    } else {
+      // 🚫 Not logged in but trying to access protected page
+      if (protectedPages.includes(page)) {
+        location.replace("signine.html");
       }
     }
-  } else {
-    // ❌ Not logged in — redirect if trying to access protected page
-    if (protectedPages.includes(currentPage)) {
-      location.replace("/signine.html");
-    }
-  }
-});
-
+  });
 
 });

@@ -1,10 +1,8 @@
-// File: Js/nav.js
 import { auth, db } from "./firebase-config.js";
 import {
   signOut,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-
 import {
   collection,
   getDocs,
@@ -14,6 +12,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Button and section references
   const signinBtn = document.getElementById("signin");
   const signupBtn = document.getElementById("signup");
   const dashboardBtn = document.getElementById("dashboard-btn");
@@ -27,24 +26,79 @@ document.addEventListener("DOMContentLoaded", () => {
   const cartItemsContainer = document.getElementById("cart-items");
   const cartSection = document.getElementById("cart-section");
 
-  if (cartSection) cartSection.style.display = "none";
+  // Profile section elements (show email and role)
+  const profileToggle = document.getElementById("profile-btn");
+  const userEmailEl = document.getElementById("user-email");
+  const userRoleEl = document.getElementById("user-role");
 
+  // Initially hide cart section and profile info and profile toggle button
+  if (cartSection) cartSection.style.display = "none";
+  if (profileToggle) profileToggle.style.display = "none";
+  if (userEmailEl) userEmailEl.style.display = "none";
+  if (userRoleEl) userRoleEl.style.display = "none";
+
+  // Navigation buttons: redirects
   if (signinBtn) signinBtn.addEventListener("click", () => window.location.href = "./signinE.html");
   if (signupBtn) signupBtn.addEventListener("click", () => window.location.href = "./signupE.html");
   if (dashboardBtn) dashboardBtn.addEventListener("click", () => window.location.href = "./index.html");
 
   let currentUser = null;
 
+  // Listen for auth state changes (user login/logout)
   onAuthStateChanged(auth, async (user) => {
     currentUser = user;
 
     if (user) {
+      // User logged in: hide signin/signup buttons, show profile button
+      if (signinBtn) signinBtn.style.display = "none";
+      if (signupBtn) signupBtn.style.display = "none";
+      if (profileToggle) profileToggle.style.display = "block";
+
+      // Fetch user info from Firestore (email and role)
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
-        loadCustomerCart(user.uid);
+        const userData = userDoc.data();
+        if (userEmailEl) {
+          userEmailEl.innerText = `Email: ${user.email}`;
+          userEmailEl.style.display = "none"; // Hide initially, toggle later
+        }
+        if (userRoleEl) {
+          userRoleEl.innerText = `Role: ${userData.role}`;
+          userRoleEl.style.display = "none"; // Hide initially
+        }
+      } else {
+        // No user data found
+        if (userEmailEl) {
+          userEmailEl.innerText = `Email: ${user.email}`;
+          userEmailEl.style.display = "none";
+        }
+        if (userRoleEl) {
+          userRoleEl.innerText = "Role: Not available";
+          userRoleEl.style.display = "none";
+        }
       }
+
+      // Load user cart items
+      loadCustomerCart(user.uid);
+
+    } else {
+      // User logged out: show signin/signup, hide profile and cart info
+      if (signinBtn) signinBtn.style.display = "inline-block";
+      if (signupBtn) signupBtn.style.display = "inline-block";
+      if (profileToggle) profileToggle.style.display = "none";
+      if (cartItemsContainer) cartItemsContainer.innerHTML = "";
+      if (userEmailEl) {
+        userEmailEl.innerText = "";
+        userEmailEl.style.display = "none";
+      }
+      if (userRoleEl) {
+        userRoleEl.innerText = "";
+        userRoleEl.style.display = "none";
+      }
+      if (cartSection) cartSection.style.display = "none";
     }
 
+    // Control access to pages — only logged-in users can visit
     const handlePageAccess = (btn, page) => {
       if (btn) {
         btn.addEventListener("click", () => {
@@ -63,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     handlePageAccess(homeBtn, "./home.html");
   });
 
+  // Load user cart items from Firestore and display
   async function loadCustomerCart(userId) {
     const cartRef = collection(db, "users", userId, "cart");
     const cartSnap = await getDocs(cartRef);
@@ -95,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // View Cart button: only logged-in users
   if (viewCartBtn) {
     viewCartBtn.addEventListener("click", () => {
       if (!currentUser) {
@@ -102,10 +158,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       loadCustomerCart(currentUser.uid);
-      cartSection.style.display = "block";
+      if (cartSection) cartSection.style.display = "block";
     });
   }
 
+  // Checkout button clears the cart for logged-in users
   if (checkoutBtn) {
     checkoutBtn.addEventListener("click", async () => {
       if (!currentUser) {
@@ -115,21 +172,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const cartRef = collection(db, "users", currentUser.uid, "cart");
       const cartSnap = await getDocs(cartRef);
+
       const deletePromises = cartSnap.docs.map((docSnap) =>
         deleteDoc(doc(db, "users", currentUser.uid, "cart", docSnap.id))
       );
       await Promise.all(deletePromises);
+
       alert("Checkout successful! Cart cleared.");
       loadCustomerCart(currentUser.uid);
     });
   }
 
+  // Close Cart section
   if (closeCart) {
     closeCart.addEventListener("click", () => {
-      cartSection.style.display = "none";
+      if (cartSection) cartSection.style.display = "none";
     });
   }
 
+  // Logout button logs user out and redirects to signin page
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async (event) => {
       event.preventDefault();
@@ -138,4 +199,41 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "./signinE.html";
     });
   }
+
+  // Profile button toggles showing email and role divs
+  // if (profileToggle) {
+  //   profileToggle.addEventListener("click", () => {
+  //     if (!currentUser) return; // No toggle if not logged in
+
+  //     const isEmailVisible = userEmailEl.style.display === "block";
+  //     userEmailEl.style.display = isEmailVisible ? "none" : "block";
+  //     userRoleEl.style.display = isEmailVisible ? "none" : "block";
+  //   });
+  // }
+
+  // const profileToggle = document.getElementById("profile-btn");
+const profileInfoBox = document.getElementById("profile-info");
+const closeProfileBtn = document.getElementById("close-profile");
+
+if (profileToggle) {
+  profileToggle.addEventListener("click", () => {
+    if (currentUser) {
+      profileInfoBox.style.display = "block";
+
+      // Ensure email and role text are shown
+      userEmailEl.style.display = "block";
+      userRoleEl.style.display = "block";
+    } else {
+      alert("Please log in to view your profile.");
+    }
+  });
+}
+
+if (closeProfileBtn) {
+  closeProfileBtn.addEventListener("click", () => {
+    profileInfoBox.style.display = "none";
+  });
+}
+
+
 });
