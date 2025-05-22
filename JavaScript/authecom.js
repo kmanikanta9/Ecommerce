@@ -79,30 +79,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ✅ Role-based Redirect
-  onAuthStateChanged(auth, async (user) => {
-    const currentPage = window.location.pathname.split("/").pop() || "index.html";
-    const vendorPages = ["vendor.html"];
-    const customerPages = ["fashion.html", "electronics.html", "home.html"];
-    const publicPages = ["index.html", "signinE.html", "signupE.html", ""];
+onAuthStateChanged(auth, async (user) => {
+  const currentPage = location.pathname;
 
-    if (user) {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const role = userDoc.data().role;
-        if (role === "vendor" && !vendorPages.includes(currentPage)) {
-          if (publicPages.includes(currentPage)) window.location.href = "vendor.html";
-        } else if (role !== "vendor" && !customerPages.includes(currentPage)) {
-          if (["signinE.html", "signupE.html"].includes(currentPage)) {
-            window.location.href = "index.html";
-          }
-        }
-      } else {
-        await signOut(auth);
-        if (currentPage !== "signinE.html") window.location.href = "signinE.html";
+  if (user) {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const role = userData.role;
+
+      // Prevent redirect loop if user is already on correct page
+      if (role === "vendor" && !currentPage.includes("vendor.html")) {
+        location.replace("/vendor.html");
+      } else if (role === "customer" && !currentPage.includes("index.html") &&
+                 !currentPage.includes("fashion.html") &&
+                 !currentPage.includes("electronics.html") &&
+                 !currentPage.includes("home.html")) {
+        location.replace("/index.html");
       }
-    } else {
-      const isPublic = publicPages.includes(currentPage);
-      if (!isPublic && currentPage !== "signinE.html") window.location.href = "signinE.html";
     }
-  });
+  } else {
+    // Only redirect if user tries to access a protected page
+    const protectedPages = [
+      "/index.html", "/fashion.html", "/electronics.html", "/home.html", "/vendor.html"
+    ];
+
+    if (protectedPages.some(page => currentPage.includes(page))) {
+      location.replace("/signine.html"); // redirect to login
+    }
+  }
+});
+
 });
