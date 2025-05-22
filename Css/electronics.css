@@ -419,12 +419,11 @@ img {
 }
 
 
-/* Hide cart initially */
+
 .hidden {
   display: none;
 }
 
-/* Cart section styling */
 #cart-section {
   position: fixed;
   top: 50%;
@@ -441,7 +440,7 @@ img {
   box-sizing: border-box;
 }
 
-/* Close button */
+
 #close-cart {
   position: absolute;
   top: 10px;
@@ -458,7 +457,7 @@ img {
   text-align: center;
 }
 
-/* Cart item structure */
+
 .cart-item {
   display: flex;
   flex-direction: column;
@@ -470,7 +469,7 @@ img {
   background-color: #444;
 }
 
-/* Group image and product info horizontally */
+
 .cart-item-content {
   display: flex;
   align-items: center;
@@ -484,7 +483,7 @@ img {
   border-radius: 6px;
 }
 
-/* Remove button aligned properly */
+
 .cart-buttons {
   display: flex;
   justify-content: flex-end;
@@ -500,7 +499,7 @@ img {
   cursor: pointer;
 }
 
-/* Checkout button */
+
 #checkout-btn {
   padding: 10px;
   font-size: 15px;
@@ -544,7 +543,7 @@ img {
   border: 1px solid #e0e6ed;
 }
 
-/* Close Button in Top-Right of the Section */
+
 .close-btn {
   position: absolute;
   top: 10px;
@@ -561,7 +560,7 @@ img {
   color: #e74c3c;
 }
 
-/* Optional Heading */
+
 .profile-section h3 {
   margin-top: 0;
   margin-bottom: 15px;
@@ -570,7 +569,6 @@ img {
   text-align: left;
 }
 
-/* Email and Role Info Boxes */
 #user-email,
 #user-role {
   font-size: 15px;

@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       fashionArray.push({ id: docSnap.id, ...data });
     });
 
-    // Filter
+
     const selectedFilter = filterSelect.value;
     if (selectedFilter) {
       fashionArray = fashionArray.filter(
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     }
 
-    // Sort
+   
     const selectedSort = sortSelect.value;
     if (selectedSort === "asc") {
       fashionArray.sort((a, b) => a.fashionPrice - b.fashionPrice);
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
           await setDoc(doc(db, "users", userId, "cart", item.id), {
             ...item,
-            cartType: "fashion",  // Mark item as fashion type
+            cartType: "fashion",  
             addedAt: new Date().toISOString(),
           });
           alert("Product added to cart!");
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = docSnap.data();
       const itemId = docSnap.id;
 
-      // Support showing fashion or electronics items in cart
+    
       const title = data.fashionTitle || data.electronicsTitle || data.homeTitle|| "Unknown Product";
       const price = data.fashionPrice || data.electronicsPrice || data.homePrice||0;
       const image = data.fashionImage || data.electronicsImage || data.homeImage||"";

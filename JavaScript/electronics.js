@@ -1,4 +1,4 @@
-// Shared cart structure for both fashion and electronics
+
 
 import { auth, db } from "./firebase-config.js";
 import {

@@ -1,4 +1,4 @@
-// File: Js/index.js
+
 import { auth, db } from "./firebase-config.js";
 import {
   signOut,
@@ -21,12 +21,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const homeBtn = document.getElementById("home-btn");
   const dashboardBtn = document.getElementById("dashboard-btn");
 
-  // ✅ Direct navigation for sign-in/sign-up/dashboard
+  
   if (signinBtn) signinBtn.addEventListener("click", () => window.location.href = "./signinE.html");
   if (signupBtn) signupBtn.addEventListener("click", () => window.location.href = "./signupE.html");
   if (dashboardBtn) dashboardBtn.addEventListener("click", () => window.location.href = "./index.html");
 
-  // ✅ Protected navigation — redirect to signin if not logged in
   onAuthStateChanged(auth, (user) => {
     const handleAccess = (btn, page) => {
       if (btn) {
@@ -55,6 +54,5 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "./signinE.html";
     });
   }
-  // ✅ Optional: Logout button inside nav.js now
-  // Leave it there to handle logout globally
+  
 });

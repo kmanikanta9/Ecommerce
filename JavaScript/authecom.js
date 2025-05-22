@@ -1,4 +1,4 @@
-// File: Js/authecom.js
+
 import { auth, db } from "./firebase-config.js";
 import {
   createUserWithEmailAndPassword,
@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupBtn = document.getElementById("signup-btn");
   const logoutBtn = document.getElementById("logout-btn");
 
-  // ✅ Sign In
   if (signinBtn) {
     signinBtn.addEventListener("click", async (event) => {
       event.preventDefault();
@@ -45,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Sign Up
+  
   if (signupBtn) {
     signupBtn.addEventListener("click", async (event) => {
       event.preventDefault();
@@ -64,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Optional Logout Button Handler
+  
   // if (logoutBtn) {
   //   logoutBtn.addEventListener("click", async (event) => {
   //     event.preventDefault();
@@ -78,12 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
   //   });
   // }
 
-  // ✅ Role-based Redirect on Page Load
+ 
   onAuthStateChanged(auth, async (user) => {
     const currentPage = location.pathname;
     const page = currentPage.split("/").pop();
 
-    // 🔐 Pages only for logged-in users
+  
     const protectedPages = [
       "fashion.html",
       "electronics.html",
@@ -91,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "vendor.html"
     ];
 
-    // 🚪 Auth pages (signin/signup) - should be avoided by logged-in users
+    
     const authPages = [
       "signine.html",
       "signupE.html"
@@ -103,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const userData = userDoc.data();
         const role = userData.role;
 
-        // 🔁 Redirect logged-in users away from signin/signup
+    
         if (authPages.includes(page)) {
           if (role === "vendor") {
             location.replace("vendor.html");
@@ -113,19 +112,18 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // ✅ Vendor trying to access customer pages
         if (role === "vendor" && protectedPages.includes(page) && page !== "vendor.html") {
           location.replace("vendor.html");
         }
 
-        // ✅ Customer trying to access vendor-only page
+        
         if (role === "customer" && page === "vendor.html") {
           location.replace("index.html");
         }
 
       }
     } else {
-      // 🚫 Not logged in but trying to access protected page
+      
       if (protectedPages.includes(page)) {
         location.replace("signine.html");
       }

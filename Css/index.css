@@ -530,7 +530,7 @@ img {
     left: 20%;
     cursor: pointer;
 }
-/* Profile Section Positioned at Top-Right */
+
 .profile-section {
   position: fixed;
   top: 80px;
@@ -546,7 +546,7 @@ img {
   border: 1px solid #e0e6ed;
 }
 
-/* Close Button in Top-Right of the Section */
+
 .close-btn {
   position: absolute;
   top: 10px;
@@ -563,7 +563,7 @@ img {
   color: #e74c3c;
 }
 
-/* Optional Heading */
+
 .profile-section h3 {
   margin-top: 0;
   margin-bottom: 15px;
@@ -572,7 +572,7 @@ img {
   text-align: left;
 }
 
-/* Email and Role Info Boxes */
+
 #user-email,
 #user-role {
   font-size: 15px;
