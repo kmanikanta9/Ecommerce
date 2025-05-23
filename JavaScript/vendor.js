@@ -226,4 +226,31 @@ document.addEventListener("DOMContentLoaded",async()=>{
         loadhome(currentUser,document.getElementById("user-role"))
     })
 
+//     const profileToggle = document.getElementById("profile-btn");
+//   const userEmailEl = document.getElementById("user-email");
+//   const userRoleEl = document.getElementById("user-role");
+//     const profileInfoBox = document.getElementById("profile-info");
+// const closeProfileBtn = document.getElementById("close-profile");
+
+// if (profileToggle) {
+//   profileToggle.addEventListener("click", () => {
+//     console.log("clicked")
+//     if (currentUser) {
+//       profileInfoBox.style.display = "block";
+
+  
+//       userEmailEl.style.display = "block";
+//       userRoleEl.style.display = "block";
+//     } else {
+//       alert("Please log in to view your profile.");
+//     }
+//   });
+// }
+
+// if (closeProfileBtn) {
+//   closeProfileBtn.addEventListener("click", () => {
+//     profileInfoBox.style.display = "none";
+//   });
+// }
+
 })
