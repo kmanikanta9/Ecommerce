@@ -24,16 +24,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let currentUser = null;
   let currentRole = null;
-    cartSection.style.display="none"
+
+  if (cartSection) cartSection.style.display = "none";
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        currentRole = userDocSnap.data().role;
-        loadFashionProducts(currentUser.uid, currentRole);
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          currentRole = userDocSnap.data().role;
+          loadFashionProducts(currentUser.uid, currentRole);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
     } else {
       console.warn("No user is logged in.");
@@ -41,35 +46,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   async function loadFashionProducts(userId, role) {
+    if (!fashionProducts) return;
     fashionProducts.innerHTML = "";
-    const fashionRef = collection(db, "fashion");
-    const snapshot = await getDocs(fashionRef);
 
-    let fashionArray = [];
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      fashionArray.push({ id: docSnap.id, ...data });
-    });
+    try {
+      const fashionRef = collection(db, "fashion");
+      const snapshot = await getDocs(fashionRef);
 
+      let fashionArray = [];
+      snapshot.forEach((docSnap) => {
+        fashionArray.push({ id: docSnap.id, ...docSnap.data() });
+      });
 
-    const selectedFilter = filterSelect.value;
-    if (selectedFilter) {
-      fashionArray = fashionArray.filter(
-        (item) => item.fashionCategory === selectedFilter
-      );
+      const selectedFilter = filterSelect?.value;
+      if (selectedFilter) {
+        fashionArray = fashionArray.filter(item => item.fashionCategory === selectedFilter);
+      }
+
+      const selectedSort = sortSelect?.value;
+      if (selectedSort === "asc") {
+        fashionArray.sort((a, b) => a.fashionPrice - b.fashionPrice);
+      } else if (selectedSort === "desc") {
+        fashionArray.sort((a, b) => b.fashionPrice - a.fashionPrice);
+      }
+
+      fashionArray.forEach((item) => displayFashionItem(item, userId, role));
+    } catch (error) {
+      console.error("Error loading fashion products:", error);
     }
-
-   
-    const selectedSort = sortSelect.value;
-    if (selectedSort === "asc") {
-      fashionArray.sort((a, b) => a.fashionPrice - b.fashionPrice);
-    } else if (selectedSort === "desc") {
-      fashionArray.sort((a, b) => b.fashionPrice - a.fashionPrice);
-    }
-
-    fashionArray.forEach((item) => {
-      displayFashionItem(item, userId, role);
-    });
   }
 
   function displayFashionItem(item, userId, role) {
@@ -84,24 +88,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       <button class="fashion-cart-btn">Add to Cart</button>
     `;
 
-    const btn = div.querySelector(".fashion-cart-btn");
-    btn.addEventListener("click", async () => {
+    div.querySelector(".fashion-cart-btn").addEventListener("click", async () => {
       if (!userId) {
         alert("Please log in to add items to cart.");
         return;
       }
-
       if (role === "Customer") {
         try {
           await setDoc(doc(db, "users", userId, "cart", item.id), {
             ...item,
-            cartType: "fashion",  
+            cartType: "fashion",
             addedAt: new Date().toISOString(),
           });
           alert("Product added to cart!");
         } catch (error) {
-          console.error("Error adding product to cart:", error);
-          alert("Failed to add product to cart.");
+          console.error("Error adding to cart:", error);
         }
       } else {
         alert("Only customers can add items to cart.");
@@ -112,48 +113,51 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function loadCustomerCart(userId) {
+    if (!cartItemsContainer) return;
+
     cartItemsContainer.innerHTML = "";
-    const cartRef = collection(db, "users", userId, "cart");
-    const cartSnap = await getDocs(cartRef);
+    try {
+      const cartRef = collection(db, "users", userId, "cart");
+      const cartSnap = await getDocs(cartRef);
 
-    if (cartSnap.empty) {
-      cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
-      return;
-    }
+      if (cartSnap.empty) {
+        cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+        return;
+      }
 
-    cartSnap.forEach((docSnap) => {
-      const data = docSnap.data();
-      const itemId = docSnap.id;
+      cartSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const itemId = docSnap.id;
+        const title = data.fashionTitle || data.electronicsTitle || data.homeTitle || "Unknown Product";
+        const price = data.fashionPrice || data.electronicsPrice || data.homePrice || 0;
+        const image = data.fashionImage || data.electronicsImage || data.homeImage || "";
 
-    
-      const title = data.fashionTitle || data.electronicsTitle || data.homeTitle|| "Unknown Product";
-      const price = data.fashionPrice || data.electronicsPrice || data.homePrice||0;
-      const image = data.fashionImage || data.electronicsImage || data.homeImage||"";
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+        div.innerHTML = `
+          <img src="${image}" alt="" style="width: 100px;">
+          <h4>${title}</h4>
+          <p>₹${price}</p>
+          <button class="delete-cart-item-btn">Remove</button>
+        `;
 
-      const div = document.createElement("div");
-      div.classList.add("cart-item");
-      div.innerHTML = `
-        <img src="${image}" alt="" style="width: 100px;">
-        <h4>${title}</h4>
-        <p>₹${price}</p>
-        <button class="delete-cart-item-btn">Remove</button>
-      `;
+        div.querySelector(".delete-cart-item-btn").addEventListener("click", async () => {
+          try {
+            await deleteDoc(doc(db, "users", userId, "cart", itemId));
+            alert("Item removed from cart");
+            loadCustomerCart(userId);
+          } catch (error) {
+            console.error("Error removing item:", error);
+          }
+        });
 
-      const deleteBtn = div.querySelector(".delete-cart-item-btn");
-      deleteBtn.addEventListener("click", async () => {
-        try {
-          await deleteDoc(doc(db, "users", userId, "cart", itemId));
-          alert("Item removed from cart");
-          loadCustomerCart(userId);
-        } catch (error) {
-          console.error("Error removing item:", error);
-        }
+        cartItemsContainer.appendChild(div);
       });
 
-      cartItemsContainer.appendChild(div);
-    });
-
-    cartSection.style.display = "block";
+      if (cartSection) cartSection.style.display = "block";
+    } catch (error) {
+      console.error("Error loading cart:", error);
+    }
   }
 
   if (viewCartBtn) {
@@ -189,16 +193,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (closeCartBtn) {
     closeCartBtn.addEventListener("click", () => {
-      cartSection.style.display = "none";
-      cartItemsContainer.innerHTML = "";
+      if (cartSection) cartSection.style.display = "none";
+      if (cartItemsContainer) cartItemsContainer.innerHTML = "";
     });
   }
 
-  sortSelect.addEventListener("change", () => {
-    if (currentUser) loadFashionProducts(currentUser.uid, currentRole);
-  });
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+      if (currentUser) loadFashionProducts(currentUser.uid, currentRole);
+    });
+  }
 
-  filterSelect.addEventListener("change", () => {
-    if (currentUser) loadFashionProducts(currentUser.uid, currentRole);
-  });
+  if (filterSelect) {
+    filterSelect.addEventListener("change", () => {
+      if (currentUser) loadFashionProducts(currentUser.uid, currentRole);
+    });
+  }
 });
